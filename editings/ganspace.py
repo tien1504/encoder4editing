@@ -5,12 +5,18 @@ def edit(latents, pca, edit_directions):
     edit_latents = []
     for latent in latents:
         for pca_idx, start, end, strength in edit_directions:
-            delta = get_delta(pca, latent, pca_idx, strength)
-            delta_padded = torch.zeros(latent.shape).to('cuda')
-            delta_padded[start:end] += delta.repeat(end - start, 1)
-            edit_latents.append(latent + delta_padded)
+            if isinstance(strength, range):
+                for s in strength:
+                    edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, s))
+            else:        
+                edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, strength))
     return torch.stack(edit_latents)
 
+def edit_latent(pca, latent, pca_idx, start, end, strength):
+    delta = get_delta(pca, latent, pca_idx, strength)
+    delta_padded = torch.zeros(latent.shape).to('cuda')
+    delta_padded[start:end] += delta.repeat(end - start, 1)
+    return latent + delta_padded
 
 def get_delta(pca, latent, idx, strength):
     # pca: ganspace checkpoint. latent: (16, 512) w+
