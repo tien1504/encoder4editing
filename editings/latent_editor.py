@@ -11,8 +11,8 @@ class LatentEditor(object):
         self.generator = stylegan_generator
         self.is_cars = is_cars  # Since the cars StyleGAN output is 384x512, there is a need to crop the 512x512 output.
 
-    def apply_ganspace(self, latent, ganspace_pca, edit_directions):
-        edit_latents = ganspace.edit(latent, ganspace_pca, edit_directions)
+    def apply_ganspace(self, latent, ganspace_pca, edit_directions, factor_index):
+        edit_latents = ganspace.edit(latent, ganspace_pca, edit_directions, factor_index)
         return self._latents_to_image(edit_latents), edit_latents
 
     def apply_interfacegan(self, latent, direction, factor=1, factor_range=None):
@@ -38,8 +38,6 @@ class LatentEditor(object):
     def _latents_to_image(self, latents):
         with torch.no_grad():
             images, _ = self.generator([latents], randomize_noise=False, input_is_latent=True)
-            if self.is_cars:
-                images = images[:, :, 64:448, :]  # 512x512 -> 384x512
         horizontal_concat_image = torch.cat(list(images), 2)
         final_image = tensor2im(horizontal_concat_image)
         return final_image

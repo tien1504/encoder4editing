@@ -1,15 +1,13 @@
 import torch
 
 
-def edit(latents, pca, edit_directions):
+def edit(latents, pca, edit_directions, factor_index):
     edit_latents = []
     for latent in latents:
-        for pca_idx, start, end, strength in edit_directions:
-            if isinstance(strength, range):
-                for s in strength:
-                    edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, s))
-            else:        
-                edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, strength))
+        for pca_idx, start, end, strength_range in edit_directions:
+            strenths = list(strength_range)
+            strength = strenths[factor_index] if len(strenths) > factor_index else 0
+            edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, strength))
     return torch.stack(edit_latents)
 
 def edit_latent(pca, latent, pca_idx, start, end, strength):
