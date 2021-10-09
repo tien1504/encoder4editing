@@ -11,7 +11,7 @@ class LatentEditor(object):
         self.generator = stylegan_generator
         self.is_cars = is_cars  # Since the cars StyleGAN output is 384x512, there is a need to crop the 512x512 output.
 
-    def apply_ganspace(self, latent, ganspace_pca, edit_directions, factor_index):
+    def apply_ganspace(self, latent, ganspace_pca, edit_directions, factor_index=None):
         edit_latents = ganspace.edit(latent, ganspace_pca, edit_directions, factor_index)
         return self._latents_to_image(edit_latents), edit_latents
 
