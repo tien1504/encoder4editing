@@ -7,7 +7,7 @@ def edit(latents, pca, edit_directions, factor_index):
         for pca_idx, start, end, strength_range in edit_directions:
             strenths = list(strength_range)
             if factor_index == None:
-                for strenth in strenths:
+                for strength in strenths:
                     edit_latents.append(edit_latent(pca, latent, pca_idx, start, end, strength))
             else:
                 strength = strenths[factor_index] if len(strenths) > factor_index else 0
